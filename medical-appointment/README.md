@@ -1,6 +1,12 @@
 # Medical appointment
 
-![Medical Appointment AI image](../images/Medical_Appointment_Image.png)
+Standalone repository for the medical appointment challenge.
+See [the solution setup guide](solution/README.md) to run the implemented
+Whisper + FLAN-T5 pipeline on `cuda:1`. The challenge description and baseline
+instructions follow below.
+
+The supplied evaluation dataset is included in `data/`. Model weights,
+transcripts, and generated results are local-only and excluded from Git.
 
 A patient sees their doctor. The consultation is recorded, and afterwards
 somebody wants to know what was actually agreed — which vaccine was given, what
@@ -26,21 +32,21 @@ That half of the score is the larger one.
 ## Quickstart
 
 ```cmd
-git clone https://github.com/amboltio/Nordic-AI-Cup-2026
-cd Nordic-AI-Cup-2026/medical-appointment
+git clone git@gitlab.com:nordic-ai-cup-2026/medical-appointment.git
+cd medical-appointment
 pip install -r requirements.txt
 ```
 
 Serve the baseline:
 
 ```cmd
-python api.py
+python -m uvicorn src.api:app --host 0.0.0.0 --port 9054
 ```
 
 Then, in a second terminal, score it against the supplied conversations:
 
 ```cmd
-python local_evaluator.py
+python -m src.evaluate
 ```
 
 You now have a working endpoint and a number to improve. The baseline answers
@@ -51,7 +57,7 @@ there to prove the plumbing works, not to compete.
 Check that the harness and the data agree with each other at any time:
 
 ```cmd
-python local_evaluator.py --oracle
+python -m src.evaluate --oracle
 ```
 
 That feeds the ground truth in — answers and spans alike — and should print
@@ -62,14 +68,14 @@ your setup.
 
 | File | What it is |
 | --- | --- |
-| `api.py` | The FastAPI server the evaluator calls. You probably will not change it. |
-| `example.py` | The baseline. **This is the file to replace.** |
-| `dtos.py` | The request and response models. |
-| `utils.py` | Base64 decoding, MP3 duration, response validation, sample loading, the tIoU scoring helpers. |
-| `local_evaluator.py` | Replays the supplied questions through your endpoint and scores it. |
+| `src/api.py` | The FastAPI server the evaluator calls. You probably will not change it. |
+| `src/example.py` | The baseline. **This is the file to replace.** |
+| `src/dtos.py` | The request and response models. |
+| `src/utils.py` | Base64 decoding, MP3 duration, response validation, sample loading, the tIoU scoring helpers. |
+| `src/evaluate.py` | Replays the supplied questions through your endpoint and scores it. |
 | `requirements.txt` | Dependencies. Loose pins, so they will not fight your ASR stack. |
-| `Dockerfile` | If you would rather containerise the server. |
-| `data/` | 39 training samples: audio, questions, and the annotated evidence spans. |
+| `Dockerfile` | Original baseline container recipe; uses the old file layout. Use the solution setup guide for deployment. |
+| `data/` | Supplied dataset: 39 audio samples, questions, and annotated evidence spans. |
 
 ## About the challenge
 
@@ -128,7 +134,7 @@ off_topic      Is there any mention of attending a concert?              no
 The off-topic questions are free: if a subject never appears, the answer is no.
 The hard negatives are not. They are lexically almost identical to the true
 statement, so a model that answers from topical overlap gets every one of them
-wrong. 
+wrong.
 
 Two more things worth knowing. Yes and no answers are **exactly balanced** in
 both the validation and the evaluation set, so a constant answer earns the
@@ -149,7 +155,7 @@ data/
 └── question_train.csv                 (390 questions, ten per conversation)
 ```
 
-`data/question_train.csv` is the file `local_evaluator.py` reads. Its columns:
+`data/question_train.csv` is the file `src/evaluate.py` reads. Its columns:
 
 | Column | What it is |
 | --- | --- |
@@ -437,15 +443,15 @@ guessing.
 
 ## Test locally
 
-`local_evaluator.py` replays the supplied conversations through your endpoint
+`src/evaluate.py` replays the supplied conversations through your endpoint
 using the same payloads, the same ordering and the same failure rules as the
 competition.
 
 ```cmd
-python local_evaluator.py                              # score the 390 questions
-python local_evaluator.py --oracle                     # score the ground truth
-python local_evaluator.py --verbose                    # a line per question
-python local_evaluator.py --url http://host:9054/predict
+python -m src.evaluate                              # score the 390 questions
+python -m src.evaluate --oracle                     # score the ground truth
+python -m src.evaluate --verbose                    # a line per question
+python -m src.evaluate --url http://host:9054/predict
 ```
 
 Ignore the headline number and read the breakdowns underneath it.
@@ -481,7 +487,7 @@ you actually answered yes, which separates two different failures. A high
 diagnostic with a low mean tIoU means you localize well when you notice, and
 mostly do not notice. Both low means the localization itself needs work.
 
-The weights are in `local_evaluator.py` as `ACCURACY_WEIGHT` and `TIOU_WEIGHT`
+The weights are in `src/evaluate.py` as `ACCURACY_WEIGHT` and `TIOU_WEIGHT`
 if you want to read the arithmetic.
 
 **Round trip** is your per-conversation latency against the 60-second budget,
@@ -500,7 +506,7 @@ Serve your endpoint locally and test that everything starts without errors:
 
 ```cmd
 cd medical-appointment
-python api.py
+python -m uvicorn src.api:app --host 0.0.0.0 --port 9054
 ```
 
 Open a browser and navigate to http://localhost:9054. You should see a message

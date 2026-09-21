@@ -1,0 +1,6 @@
+# Install the CUDA 12.8 PyTorch wheel first (see README.md).
+-r requirements.txt
+torch==2.8.0
+ctranslate2>=4.5,<5
+nvidia-cublas-cu12>=12.8,<13
+nvidia-cudnn-cu12>=9,<10

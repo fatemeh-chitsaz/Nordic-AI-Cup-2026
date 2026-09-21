@@ -1,0 +1,8 @@
+-r ../requirements.txt
+faster-whisper==1.2.1
+transformers==4.57.6
+torch>=2.2,<3
+numpy>=1.26,<2
+sentencepiece>=0.2,<0.3
+safetensors>=0.4
+huggingface-hub>=0.26,<1

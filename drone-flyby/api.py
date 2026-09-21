@@ -12,6 +12,12 @@ import datetime
 import logging
 import time
 
+# Configured before importing example: example.py runs a model warm-up at
+# import time and logs its result, so logging has to be ready first or that
+# message is silently dropped instead of printed.
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 import uvicorn
 from fastapi import FastAPI
 
@@ -20,10 +26,7 @@ from example import predict
 from utils import validate_response
 
 HOST = '0.0.0.0'
-PORT = 9053
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+PORT = 9055
 
 app = FastAPI()
 start_time = time.time()

@@ -12,3 +12,8 @@ requests>=2.31            # [2.34.2]
 # Only needed by local_evaluator.py. It is the same scorer the competition
 # uses, and the same version range.
 faster-coco-eval>=1.7.2,<2  # [1.7.2]
+
+# Only needed by train_yolo.py, and by example.py once weights/best.pt
+# exists. Ultralytics is AGPL-3.0 licensed -- check that fits your entry
+# before relying on it. Pulls in torch, which is a large download.
+ultralytics>=8.3
