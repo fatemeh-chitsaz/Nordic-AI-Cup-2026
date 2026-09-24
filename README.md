@@ -2,9 +2,7 @@
 
 My working repository for the **Nordic AI Cup 2026**, with competition baselines plus the solutions I developed during the event.
 
-The competition ran from **17–20 September 2026** and included three applied AI challenges: camera-guided object detection, medical-conversation QA with evidence localization, and a survival simulator.
 
-> This repository started from the official Nordic AI Cup starter kit. The sections below describe my own additions and experiments; original task specifications remain in the challenge folders.
 
 ## What I worked on
 
@@ -111,16 +109,4 @@ Nordic-AI-Cup-2026/
 └── survival-simulator/
 ```
 
-## Tech
 
-**Python · PyTorch · YOLOv8 · FastAPI · Whisper · FLAN-T5 · scikit-learn · Docker · CUDA**
-
-## Reproducibility notes
-
-The challenge folders retain the official local evaluators and protocol definitions. Where a result depends on a specific checkpoint, training regime, short evaluation sequence, or hardware constraint, that limitation is documented next to the result.
-
-## Credits
-
-Competition starter kit and challenge design: [Nordic AI Cup / Ambolt AI](https://github.com/amboltio/Nordic-AI-Cup-2026).
-
-My repository contains modifications and experimental solutions built on top of that starter kit.
